@@ -163,6 +163,9 @@ func (s *servers) InstanceExistsByProviderID(ctx context.Context, providerID str
 	}
 	_, err = serverByID(ctx, s.gclient, serverID)
 	if err != nil {
+		if errors.Is(err, gobizfly.ErrNotFound) {
+			return false, nil
+		}
 		return false, err
 	}
 	return true, nil
@@ -177,9 +180,6 @@ func (s *servers) InstanceShutdownByProviderID(ctx context.Context, providerID s
 	}
 
 	server, err := serverByID(ctx, s.gclient, serverID)
-	if errors.Is(err, gobizfly.ErrNotFound) {
-		return true, nil
-	}
 	if err != nil {
 		return false, err
 	}
